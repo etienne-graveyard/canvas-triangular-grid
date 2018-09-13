@@ -14,7 +14,10 @@ declare const module: {
   };
 };
 
-const squareSize = 26;
+app.mountOnBody();
+app.render(Root);
+
+const squareSize = 20;
 const square: Array<TriangularGrid.TriangularCoordinate> = [];
 range(-squareSize, squareSize).map(x => {
   range(-squareSize, squareSize).map(y => {
@@ -23,9 +26,6 @@ range(-squareSize, squareSize).map(x => {
   });
 });
 
-app.mountOnBody();
-app.render(Root);
-
 const icons = [search, dots, square];
 let iconSwitch: number = 0;
 let iconHue = Math.random() * 360;
@@ -33,61 +33,66 @@ const duration = 200;
 
 app.mutate((state, { t }) => {
   search.map(coord => {
+    const delay = getDelay(coord);
     TriangularGrid.set(
       state.grid,
       coord,
       ColorHlsaModel.createFromTo(
-        ColorHlsaModel.createResolved(iconHue, 50, 50, 0),
-        ColorHlsaModel.createResolved(iconHue, 50, 50),
         t,
+        ColorHlsaModel.createResolved(iconHue, 50, 100),
+        ColorHlsaModel.createResolved(iconHue, 50, 50),
+        delay,
         duration
       )
     );
   });
 });
 
-function delay(coord: TriangularGrid.TriangularCoordinate): number {
-  return Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y);
+function getDelay(coord: TriangularGrid.TriangularCoordinate): number {
+  return (Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 50;
 }
 
-app.addEventListener('click', (ev, { grid, ctx, width, height }) => {
+function getHue(coord: TriangularGrid.TriangularCoordinate): number {
+  return ((Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 10) % 360;
+}
+
+app.addEventListener('click', (ev, { grid, ctx, width, height, t }) => {
   // const x = ev.pageX - width / 2;
   // const y = -(ev.pageY - height / 2);
   // const coord = grid.resolve(x, y);
+
   iconSwitch = (iconSwitch + 1) % icons.length;
-
   const icon = icons[iconSwitch];
-
-  console.log(iconSwitch);
 
   iconHue = Math.random() * 360;
 
   app.mutate((state, { t }) => {
     // fade all
     TriangularGrid.entries(state.grid).map(([coord, color]) => {
-      const start = t + delay(coord) * 100;
+      const delay = getDelay(coord);
       TriangularGrid.updateIfExist(state.grid, coord, color =>
-        ColorHlsaModel.transitionFrom(
+        ColorHlsaModel.transitionTo(
           color,
           t,
-          ColorHlsaModel.createResolved(AnimatedModel.resolve(color.hue, t), 50, 50, 0),
-          start,
+          ColorHlsaModel.createResolved(AnimatedModel.resolve(color.hue, t), 50, 100),
+          delay,
           duration
         )
       );
     });
     // set new icon
     icon.map(coord => {
-      const start = t + delay(coord) * 100;
+      const delay = getDelay(coord);
+      const hue = (iconHue + getHue(coord)) % 360;
       TriangularGrid.update(
         state.grid,
         coord,
-        color =>
-          ColorHlsaModel.transitionFrom(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50), start, duration),
+        color => ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(hue, 50, 50), delay, duration),
         ColorHlsaModel.createFromTo(
-          ColorHlsaModel.createResolved(iconHue, 50, 50, 0),
-          ColorHlsaModel.createResolved(iconHue, 50, 50),
-          start,
+          t,
+          ColorHlsaModel.createResolved(hue, 50, 50, 0),
+          ColorHlsaModel.createResolved(hue, 50, 50),
+          delay,
           duration
         )
       );

@@ -26,32 +26,31 @@ namespace ColorHlsaModel {
     return { hue, saturation, lightness, alpha };
   }
 
-  export function createResolved(
-    hue: number,
-    saturation: number,
-    lightness: number,
-    alpha: number = 1
-  ): StateResolved {
+  export function createResolved(hue: number, saturation: number, lightness: number, alpha: number = 1): StateResolved {
     return { hue, saturation, lightness, alpha };
   }
 
-  export function createFromTo(from: StateResolved, to: StateResolved, start: number, duration: number): State {
+  export function createFromTo(
+    t: number,
+    from: StateResolved,
+    to: StateResolved,
+    start: number,
+    duration: number
+  ): State {
     return {
-      hue: AnimatedModel.create(from.hue, to.hue, start, duration),
-      saturation: AnimatedModel.create(from.saturation, to.saturation, start, duration),,
-      lightness: AnimatedModel.create(from.lightness, to.lightness, start, duration),,
-      alpha: AnimatedModel.create(from.alpha, to.alpha, start, duration),,
+      hue: AnimatedModel.createFromTo(t, from.hue, to.hue, start, duration),
+      saturation: AnimatedModel.createFromTo(t, from.saturation, to.saturation, start, duration),
+      lightness: AnimatedModel.createFromTo(t, from.lightness, to.lightness, start, duration),
+      alpha: AnimatedModel.createFromTo(t, from.alpha, to.alpha, start, duration),
     };
   }
 
-  export function transitionFrom(current: State, t: number, to: StateResolved, start: number, duration: number) {
-    const resoled = resolve(current, t);
-    return createFromTo(
-      resoled,
-      to,
-      start,
-      duration
-    )
+  export function transitionTo(current: State, t: number, to: StateResolved, delay: number, duration: number): State {
+    AnimatedModel.transitionTo(current.hue, t, to.hue, delay, duration);
+    AnimatedModel.transitionTo(current.saturation, t, to.saturation, delay, duration);
+    AnimatedModel.transitionTo(current.lightness, t, to.lightness, delay, duration);
+    AnimatedModel.transitionTo(current.alpha, t, to.alpha, delay, duration);
+    return current;
   }
 
   export function resolve(model: State, t: number): StateResolved {

@@ -1,5 +1,5 @@
 import { timeSinceLastFrame, currentFrameTime, onFrameStart, onFrameEnd } from 'framesync';
-import ProxyStateTree from 'proxy-state-tree';
+// import ProxyStateTree from 'proxy-state-tree';
 import createCanvas from './createCanvas';
 
 type MutationEffects = {
@@ -43,7 +43,7 @@ class App<State extends object, UserEffects extends object> {
   private canvasEl: HTMLCanvasElement;
   private mounted: boolean = false;
   private ctx: CanvasRenderingContext2D;
-  private tree: ProxyStateTree;
+  // private tree: ProxyStateTree;
   private width: number;
   private height: number;
   private density: number = 1;
@@ -62,7 +62,7 @@ class App<State extends object, UserEffects extends object> {
     this.density = density;
     this.applySize();
     this.state = state;
-    this.tree = new ProxyStateTree(state);
+    // this.tree = new ProxyStateTree(state);
     this.renderSub = this.renderSub.bind(this);
     this.connect = this.connect.bind(this);
   }

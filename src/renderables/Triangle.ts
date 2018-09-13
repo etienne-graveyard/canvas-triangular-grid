@@ -26,6 +26,10 @@ const Triangle: Renderable<Props> = ({ ctx, width, height, state, grid, coord, t
   if (alpha === 0) {
     return;
   }
+  const lightness = AnimatedModel.resolve(color.lightness, t);
+  if (lightness === 100) {
+    return;
+  }
 
   ctx.beginPath();
   ctx.moveTo(xtop.x, xtop.y);
