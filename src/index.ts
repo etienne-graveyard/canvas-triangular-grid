@@ -14,42 +14,52 @@ declare const module: {
 app.mountOnBody();
 app.render(Root);
 
+let iconHue = Math.random() * 360;
+
 app.mutate((state, { t }) => {
   search.map(coord => {
     TriangularGrid.set(
       state.grid,
       coord,
       ColorHlsaModel.createFromTo(
-        ColorHlsaModel.createResolved(Math.random() * 360, 50, 50, 0),
-        ColorHlsaModel.createResolved(Math.random() * 360, 50, 50),
+        ColorHlsaModel.createResolved(iconHue, 50, 50, 0),
+        ColorHlsaModel.createResolved(iconHue, 50, 50),
         t,
-        2000
+        500
       )
     );
   });
 });
 
 app.addEventListener('click', (ev, { grid, ctx, width, height }) => {
-  const x = ev.clientX - width / 2;
-  const y = -(ev.clientY - height / 2);
-  const coord = grid.resolve(x, y);
+  // const x = ev.pageX - width / 2;
+  // const y = -(ev.pageY - height / 2);
+  // const coord = grid.resolve(x, y);
+
+  iconHue = Math.random() * 360;
+
   app.mutate((state, { t }) => {
-    if (TriangularGrid.has(state.grid, coord)) {
-      TriangularGrid.updateIfExist(state.grid, coord, elem =>
-        ColorHlsaModel.transitionFrom(elem, t, ColorHlsaModel.createResolved(Math.random() * 360, 50, 50), t, 2000)
+    TriangularGrid.entries(state.grid).map(([coord, color]) => {
+      TriangularGrid.updateIfExist(state.grid, coord, color =>
+        ColorHlsaModel.transitionFrom(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50), t, 500)
       );
-    } else {
-      TriangularGrid.set(
-        state.grid,
-        coord,
-        ColorHlsaModel.createFromTo(
-          ColorHlsaModel.createResolved(Math.random() * 360, 50, 50, 0),
-          ColorHlsaModel.createResolved(Math.random() * 360, 50, 50),
-          t,
-          2000
-        )
-      );
-    }
+    });
+    // if (TriangularGrid.has(state.grid, coord)) {
+    //   TriangularGrid.updateIfExist(state.grid, coord, elem =>
+    //     ColorHlsaModel.transitionFrom(elem, t, ColorHlsaModel.createResolved(iconHue, 50, 50), t, 2000)
+    //   );
+    // } else {
+    //   TriangularGrid.set(
+    //     state.grid,
+    //     coord,
+    //     ColorHlsaModel.createFromTo(
+    //       ColorHlsaModel.createResolved(Math.random() * 360, 50, 50, 0),
+    //       ColorHlsaModel.createResolved(Math.random() * 360, 50, 50),
+    //       t,
+    //       2000
+    //     )
+    //   );
+    // }
   });
 });
 
