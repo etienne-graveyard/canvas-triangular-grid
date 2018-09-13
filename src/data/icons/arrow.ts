@@ -1,6 +1,6 @@
 import TriangularGrid from '../../state/TriangularGrid';
 
-const arrow: Array<TriangularGrid.TriangularCoordinate> = [
+const arrow: Array<TriangularGrid.Coordinate> = [
   { x: 1, y: 1, side: 'l' },
   { x: 1, y: 1, side: 'r' },
   { x: 0, y: 1, side: 'l' },

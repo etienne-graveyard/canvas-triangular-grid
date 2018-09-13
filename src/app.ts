@@ -13,6 +13,8 @@ const app = new App({
   canvas: canvasEl as any,
 });
 
+export type TApp = typeof app;
+
 (window as any).app = app;
 
 export default app;

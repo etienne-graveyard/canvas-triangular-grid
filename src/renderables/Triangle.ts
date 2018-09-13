@@ -4,7 +4,7 @@ import ColorHlsaModel from '../state/ColorHslaModel';
 import AnimatedModel from '../state/AnimatedModel';
 
 export type Props = {
-  coord: TriangularGrid.TriangularCoordinate;
+  coord: TriangularGrid.Coordinate;
   color: ColorHlsaModel;
 };
 

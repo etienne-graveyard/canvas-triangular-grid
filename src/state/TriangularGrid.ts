@@ -11,7 +11,7 @@ namespace TriangularGrid {
 
   export type State<V> = DldcMap.State<OfuscatedKey, V>;
 
-  export type TriangularCoordinate = {
+  export type Coordinate = {
     x: number;
     y: number;
     side: 'l' | 'r';
@@ -21,11 +21,11 @@ namespace TriangularGrid {
     return DldcMap.create<OfuscatedKey, V>();
   }
 
-  function serializeCoord(coord: TriangularCoordinate): OfuscatedKey {
+  function serializeCoord(coord: Coordinate): OfuscatedKey {
     return `${Math.floor(coord.x)}_${Math.floor(coord.y)}_${coord.side}` as any;
   }
 
-  function deserializeCoord(coord: OfuscatedKey): TriangularCoordinate {
+  function deserializeCoord(coord: OfuscatedKey): Coordinate {
     const parts = ((coord as any) as string).split('_');
     return {
       x: parseInt(parts[0], 10),
@@ -34,36 +34,31 @@ namespace TriangularGrid {
     };
   }
 
-  export function set<V>(model: State<V>, coord: TriangularCoordinate, value: V): void {
+  export function set<V>(model: State<V>, coord: Coordinate, value: V): void {
     DldcMap.set(model, serializeCoord(coord), value);
   }
 
-  export function has<V>(model: State<V>, coord: TriangularCoordinate): boolean {
+  export function has<V>(model: State<V>, coord: Coordinate): boolean {
     return DldcMap.has(model, serializeCoord(coord));
   }
 
-  export function remove<V>(model: State<V>, coord: TriangularCoordinate): void {
+  export function remove<V>(model: State<V>, coord: Coordinate): void {
     return DldcMap.remove(model, serializeCoord(coord));
   }
 
-  export function updateIfExist<V>(model: State<V>, coord: TriangularCoordinate, updater: (value: V) => V): void {
+  export function updateIfExist<V>(model: State<V>, coord: Coordinate, updater: (value: V) => V): void {
     return DldcMap.updateIfExist(model, serializeCoord(coord), updater);
   }
 
-  export function update<V>(
-    model: State<V>,
-    coord: TriangularCoordinate,
-    updater: (value: V) => V,
-    notSetValue: V
-  ): void {
+  export function update<V>(model: State<V>, coord: Coordinate, updater: (value: V) => V, notSetValue: V): void {
     return DldcMap.update(model, serializeCoord(coord), updater, notSetValue);
   }
 
-  export function get<V>(model: State<V>, coord: TriangularCoordinate): V {
+  export function get<V>(model: State<V>, coord: Coordinate): V {
     return DldcMap.getOrThrow(model, serializeCoord(coord));
   }
 
-  export function entries<V>(model: State<V>): Array<[TriangularCoordinate, V]> {
+  export function entries<V>(model: State<V>): Array<[Coordinate, V]> {
     return DldcMap.entries(model).map(entry => [deserializeCoord(entry[0]), entry[1]] as any);
   }
 }

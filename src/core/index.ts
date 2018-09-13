@@ -1,13 +1,5 @@
 import { timeSinceLastFrame, currentFrameTime, onFrameStart, onFrameEnd } from 'framesync';
-// import ProxyStateTree from 'proxy-state-tree';
 import { createCanvas, setupCanvas } from './createCanvas';
-
-type MutationEffects = {
-  dt: number;
-  t: number;
-  width: number;
-  height: number;
-};
 
 type CoreEffects<State extends object, UserEffects extends object> = {
   dt: number;
@@ -40,21 +32,36 @@ type Options<State extends object, UserEffects extends object> = {
   canvas?: HTMLCanvasElement;
 };
 
+export function createEffect<TApp extends App<object, object>, T>(effectCreator: (app: TApp) => T): T {
+  return effectCreator as any;
+}
+
 class App<State extends object, UserEffects extends object> {
   private canvasEl: HTMLCanvasElement;
   private mounted: boolean = false;
   private ctx: CanvasRenderingContext2D;
-  // private tree: ProxyStateTree;
   private width: number;
   private height: number;
   private density: number = 1;
   private eventsListeners: Map<keyof HTMLElementEventMap, Array<any>> = new Map();
   private userEffects: UserEffects;
   private state: State;
+  private onFrameStartListeners: Array<(effects: Effects<State, UserEffects>) => void> = [];
 
   constructor(options: Options<State, UserEffects>) {
     const { density = 1, width, height, state, effects } = options;
-    this.userEffects = effects;
+    this.userEffects = Object.keys(effects).reduce<typeof effects>(
+      (acc, key) => {
+        const effect = effects[key];
+        if (typeof effect === 'function') {
+          acc[key] = effect(this);
+        } else {
+          acc[key] = effect;
+        }
+        return acc;
+      },
+      {} as any
+    );
     const { el, ctx } = options.canvas
       ? setupCanvas(options.canvas, width, height, density)
       : createCanvas(width, height, density);
@@ -66,9 +73,12 @@ class App<State extends object, UserEffects extends object> {
     this.density = density;
     this.applySize();
     this.state = state;
-    // this.tree = new ProxyStateTree(state);
     this.renderSub = this.renderSub.bind(this);
     this.connect = this.connect.bind(this);
+  }
+
+  onFrameStart(cb: (effects: Effects<State, UserEffects>) => void): void {
+    this.onFrameStartListeners.push(cb);
   }
 
   mountOnBody() {
@@ -102,8 +112,10 @@ class App<State extends object, UserEffects extends object> {
   }
 
   renderOnce(rootRenderable: IRenderable<State, {}>) {
+    this.onFrameStartListeners.forEach(listener => {
+      listener(this.getEffects({}));
+    });
     this.ctx.save();
-    // this.ctx.scale(0.5, 0.5);
     this.renderSub(rootRenderable, {});
     this.ctx.restore();
   }
@@ -111,12 +123,7 @@ class App<State extends object, UserEffects extends object> {
   getImageData(sx: number = 0, sy: number = 0, sw?: number, sh?: number): ImageData {
     let w = sw === undefined ? this.width : sw;
     let h = sh === undefined ? this.width : sh;
-    return this.ctx.getImageData(
-      sx, // Math.floor(sx / this.density),
-      sy, // Math.floor(sy / this.density),
-      w, // Math.floor((sw === undefined ? this.width : sw) / this.density),
-      h // Math.floor((sh === undefined ? this.height : sh) / this.density)
-    );
+    return this.ctx.getImageData(sx, sy, w, h);
   }
 
   addEventListener<K extends keyof HTMLElementEventMap>(
@@ -137,36 +144,9 @@ class App<State extends object, UserEffects extends object> {
     return this.canvasEl.addEventListener(type, wrappedListener, options);
   }
 
-  // mutate(mutation: (state: State, context: MutationEffects) => void): void {
-  //   this.tree.startMutationTracking();
-  //   mutation(this.tree.get(), {
-  //     dt: timeSinceLastFrame(),
-  //     t: currentFrameTime(),
-  //     width: this.width,
-  //     height: this.height,
-  //   });
-  //   this.tree.clearMutationTracking();
-  //   onFrameEnd(() => {
-  //     this.tree.flush();
-  //   });
-  // }
-
-  mutate(mutation: (state: State, context: MutationEffects) => void): void {
-    mutation(this.state, {
-      dt: timeSinceLastFrame(),
-      t: currentFrameTime(),
-      width: this.width,
-      height: this.height,
-    });
-    // this.tree.clearMutationTracking();
-    // onFrameEnd(() => {
-    //   this.tree.flush();
-    // });
+  mutate(mutation: (state: State, context: Effects<State, UserEffects, {}>) => void): void {
+    mutation(this.state, this.getEffects({}));
   }
-
-  // getState(): State {
-  //   return this.tree.get();
-  // }
 
   getState(): State {
     return this.state;
@@ -174,8 +154,8 @@ class App<State extends object, UserEffects extends object> {
 
   connect<Props extends object, Output = void>(
     renderable: IRenderable<State, UserEffects, Props, Output>
-  ): (props: Props) => Output {
-    return props => this.renderSub(renderable, props);
+  ): {} extends Props ? (() => Output) : ((props: Props) => Output) {
+    return ((props: Props) => this.renderSub(renderable, props)) as any;
   }
 
   private getEffects<Props extends object = {}>(props: Props): Effects<State, UserEffects, Props> {
@@ -186,7 +166,7 @@ class App<State extends object, UserEffects extends object> {
       height: this.height,
       ctx: this.ctx,
       render: this.renderSub,
-      state: this.state, // this.tree.get(),
+      state: this.state,
       app: this,
     };
     return {
@@ -200,9 +180,7 @@ class App<State extends object, UserEffects extends object> {
     renderable: IRenderable<State, UserEffects, Props, Output>,
     props: Props
   ): Output {
-    this.ctx.save();
     const result = renderable(this.getEffects(props));
-    this.ctx.restore();
     return result;
   }
 

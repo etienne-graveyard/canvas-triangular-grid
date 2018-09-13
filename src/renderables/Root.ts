@@ -5,18 +5,20 @@ import Triangle from './Triangle';
 // import AnimatedModel from '../state/AnimatedModel';
 // import range from '../utils/range';
 
-const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
+const Root: Renderable = ({ ctx, width, height, state, grid, t, transform }) => {
   ctx.fillStyle = `white`;
   ctx.fillRect(0, 0, width, height);
 
-  const rightMargin = 10;
-  ctx.translate(width - height / 2 - rightMargin, height / 2);
-  ctx.scale(1, -1);
+  transform.apply();
 
-  // axis
-  // ctx.fillStyle = 'red';
-  // ctx.fillRect(-width / 2, -1, width, 2);
-  // ctx.fillRect(-1, -height / 2, 2, height);
+  const topleft = transform.reverse(0, height);
+  if (t === 0) {
+    console.log(topleft);
+  }
+
+  ctx.fillStyle = 'red';
+  ctx.fillRect(topleft.x - 10, topleft.y - 10, 20, 20);
+  // ctx.fillRect(0 - 10, 0 - 10, 20, 20);
 
   TriangularGrid.entries(state.grid).map(([coord, color]) => {
     Triangle({ coord, color });

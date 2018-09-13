@@ -1,8 +1,9 @@
 import TriangularGrid from '../state/TriangularGrid';
+import LineUtils from './LineUtils';
 
-type TriangularGridUtil = TriangularGridUtil.Printer;
+type TriangularGridUtils = TriangularGridUtils.Printer;
 
-namespace TriangularGridUtil {
+namespace TriangularGridUtils {
   type Options = {
     size: number;
   };
@@ -16,9 +17,9 @@ namespace TriangularGridUtil {
   };
 
   export type Printer = {
-    resolve(coord: TriangularGrid.TriangularCoordinate): Coord;
-    resolveFour(coord: TriangularGrid.TriangularCoordinate): CoordFour;
-    antiResolve(x: number, y: number): TriangularGrid.TriangularCoordinate;
+    resolve(coord: TriangularGrid.Coordinate): Coord;
+    resolveFour(coord: TriangularGrid.Coordinate): CoordFour;
+    antiResolve(x: number, y: number): TriangularGrid.Coordinate;
   };
 
   export function create(options: Options): Printer {
@@ -68,7 +69,7 @@ namespace TriangularGridUtil {
           xtop,
         };
       },
-      resolve: (coord: TriangularGrid.TriangularCoordinate) => {
+      resolve: (coord: TriangularGrid.Coordinate) => {
         return toObj(transform(coord.x * size, coord.y * size));
       },
       antiResolve: (xVal, yVal) => {
@@ -79,22 +80,14 @@ namespace TriangularGridUtil {
         const gridY = Math.floor(gridYProgress);
         const p1 = { x: gridX + 1, y: gridY };
         const p2 = { x: gridX, y: gridY + 1 };
-        const line = (x: number) => {
-          const size = p2.x - p1.x;
-          const progress = (x - p1.x) / size;
-          return p1.y + (p2.y - p1.y) * progress;
-        };
+        const line = LineUtils.lineFromPoint(p1, p2);
         const isLeft = gridYProgress > line(gridXProgress);
         return { x: gridX, y: gridY, side: isLeft ? 'l' : 'r' };
       },
     };
   }
 
-  export function move(
-    coord: TriangularGrid.TriangularCoordinate,
-    xMove: number,
-    yMove: number = 0
-  ): TriangularGrid.TriangularCoordinate {
+  export function move(coord: TriangularGrid.Coordinate, xMove: number, yMove: number = 0): TriangularGrid.Coordinate {
     return {
       side: coord.side,
       x: coord.x + xMove + yMove,
@@ -103,12 +96,12 @@ namespace TriangularGridUtil {
   }
 
   export function moveAll(
-    coords: Array<TriangularGrid.TriangularCoordinate>,
+    coords: Array<TriangularGrid.Coordinate>,
     xMove: number,
     yMove: number = 0
-  ): Array<TriangularGrid.TriangularCoordinate> {
+  ): Array<TriangularGrid.Coordinate> {
     return coords.map(c => move(c, xMove, yMove));
   }
 }
 
-export default TriangularGridUtil;
+export default TriangularGridUtils;
