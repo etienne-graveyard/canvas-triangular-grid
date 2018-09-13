@@ -1,11 +1,13 @@
 import Root from './renderables/Root';
 import app from './app';
 import TriangularGrid from './state/TriangularGrid';
-import search from './data/icons/search';
-import dots from './data/icons/dots';
+import arrow from './data/icons/arrow';
+// import search from './data/icons/search';
+// import dots from './data/icons/dots';
 import ColorHlsaModel from './state/ColorHslaModel';
-import AnimatedModel from './state/AnimatedModel';
+// import AnimatedModel from './state/AnimatedModel';
 import range from './utils/range';
+import TriangularGridUtil from './utils/TriangularGridUtil';
 
 declare const module: {
   hot?: {
@@ -26,27 +28,27 @@ range(-squareSize, squareSize).map(x => {
   });
 });
 
-const icons = [search, dots, square];
+const icons = [arrow];
 let iconSwitch: number = 0;
 let iconHue = Math.random() * 360;
 const duration = 200;
 
-app.mutate((state, { t }) => {
-  search.map(coord => {
-    const delay = getDelay(coord);
-    TriangularGrid.set(
-      state.grid,
-      coord,
-      ColorHlsaModel.createFromTo(
-        t,
-        ColorHlsaModel.createResolved(iconHue, 50, 100),
-        ColorHlsaModel.createResolved(iconHue, 50, 50),
-        delay,
-        duration
-      )
-    );
-  });
-});
+// app.mutate((state, { t }) => {
+//   search.map(coord => {
+//     const delay = getDelay(coord);
+//     TriangularGrid.set(
+//       state.grid,
+//       coord,
+//       ColorHlsaModel.createFromTo(
+//         t,
+//         ColorHlsaModel.createResolved(iconHue, 50, 100),
+//         ColorHlsaModel.createResolved(iconHue, 50, 50),
+//         delay,
+//         duration
+//       )
+//     );
+//   });
+// });
 
 function getDelay(coord: TriangularGrid.TriangularCoordinate): number {
   return (Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 50;
@@ -61,42 +63,58 @@ app.addEventListener('click', (ev, { grid, ctx, width, height, t }) => {
   // const y = -(ev.pageY - height / 2);
   // const coord = grid.resolve(x, y);
 
-  iconSwitch = (iconSwitch + 1) % icons.length;
-  const icon = icons[iconSwitch];
+  // iconSwitch = (iconSwitch + 1) % icons.length;
+  // const icon = icons[iconSwitch];
 
   iconHue = Math.random() * 360;
 
   app.mutate((state, { t }) => {
+    range(-20, 20).map(x => {
+      const hue = iconHue; // (iconHue + x * 5) % 360;
+      TriangularGridUtil.moveAll(arrow, x).map(coord => {
+        const delay = (x + 20) * 20;
+        const maxAlpha = Math.min((x - -20) * 0.2, 1);
+        TriangularGrid.update(
+          state.grid,
+          coord,
+          color => {
+            ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(hue, 50, 50, maxAlpha), delay, 0);
+            ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(hue, 50, 50, 0), delay + 10, 100);
+            return color;
+          },
+          ColorHlsaModel.createStatic(t, ColorHlsaModel.createResolved(hue, 50, 50, 0))
+        );
+      });
+    });
+
     // fade all
-    TriangularGrid.entries(state.grid).map(([coord, color]) => {
-      const delay = getDelay(coord);
-      TriangularGrid.updateIfExist(state.grid, coord, color =>
-        ColorHlsaModel.transitionTo(
-          color,
-          t,
-          ColorHlsaModel.createResolved(AnimatedModel.resolve(color.hue, t), 50, 100),
-          delay,
-          duration
-        )
-      );
-    });
+    // TriangularGrid.entries(state.grid).map(([coord, color]) => {
+    //   const delay = getDelay(coord);
+    //   TriangularGrid.updateIfExist(state.grid, coord, color =>
+    //     ColorHlsaModel.transitionTo(
+    //       color,
+    //       t,
+    //       ColorHlsaModel.createResolved(AnimatedModel.resolve(color.hue, t), 50, 100),
+    //       delay,
+    //       duration
+    //     )
+    //   );
+    // });
     // set new icon
-    icon.map(coord => {
-      const delay = getDelay(coord);
-      const hue = (iconHue + getHue(coord)) % 360;
-      TriangularGrid.update(
-        state.grid,
-        coord,
-        color => ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(hue, 50, 50), delay, duration),
-        ColorHlsaModel.createFromTo(
-          t,
-          ColorHlsaModel.createResolved(hue, 50, 50, 0),
-          ColorHlsaModel.createResolved(hue, 50, 50),
-          delay,
-          duration
-        )
-      );
-    });
+    // icon.map(coord => {
+    //   const delay = getDelay(coord);
+    //   const hue = (iconHue + getHue(coord)) % 360;
+    //   TriangularGrid.update(
+    //     state.grid,
+    //     coord,
+    //     color => {
+    //       ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(hue, 50, 50), delay, duration);
+    //       ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(hue, 50, 50, 0), delay + 1000, duration);
+    //       return color;
+    //     },
+    //     ColorHlsaModel.createStatic(t, ColorHlsaModel.createResolved(hue, 50, 50, 0))
+    //   );
+    // });
 
     // TriangularGrid.entries(state.grid).map(([coord, color]) => {
     //   TriangularGrid.updateIfExist(state.grid, coord, color =>

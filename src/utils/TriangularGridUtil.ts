@@ -1,8 +1,8 @@
 import TriangularGrid from '../state/TriangularGrid';
 
-type TriangularGridPrinter = TriangularGridPrinter.Printer;
+type TriangularGridUtil = TriangularGridUtil.Printer;
 
-namespace TriangularGridPrinter {
+namespace TriangularGridUtil {
   type Options = {
     size: number;
   };
@@ -30,25 +30,25 @@ namespace TriangularGridPrinter {
     const trScaleY = 1 / Math.sqrt(2);
     const trMoveX = -(size * Math.sqrt(3)) / 2;
 
-    const rotate = (angle: number) => (xy: [number, number]): [number, number] => [
+    const rotateVector = (angle: number) => (xy: [number, number]): [number, number] => [
       xy[0] * Math.cos(angle) - xy[1] * Math.sin(angle),
       xy[0] * Math.sin(angle) + xy[1] * Math.cos(angle),
     ];
-    const scale = (scaleX: number = 0, scaleY: number = 0) => (xy: [number, number]): [number, number] => [
+    const scaleVector = (scaleX: number = 0, scaleY: number = 0) => (xy: [number, number]): [number, number] => [
       xy[0] * scaleX,
       xy[1] * scaleY,
     ];
-    const move = (moveX: number = 0, moveY: number = 0) => (xy: [number, number]): [number, number] => [
+    const moveVector = (moveX: number = 0, moveY: number = 0) => (xy: [number, number]): [number, number] => [
       xy[0] + moveX,
       xy[1] + moveY,
     ];
 
     function transform(x: number, y: number): [number, number] {
-      return move(trMoveX)(scale(trScaleX, trScaleY)(rotate(trAngle)([x, y])));
+      return moveVector(trMoveX)(scaleVector(trScaleX, trScaleY)(rotateVector(trAngle)([x, y])));
     }
 
     function antiTransform(x: number, y: number): [number, number] {
-      return rotate(-trAngle)(scale(1 / trScaleX, 1 / trScaleY)(move(-trMoveX)([x, y])));
+      return rotateVector(-trAngle)(scaleVector(1 / trScaleX, 1 / trScaleY)(moveVector(-trMoveX)([x, y])));
     }
 
     function toObj(val: [number, number]): { x: number; y: number } {
@@ -56,42 +56,6 @@ namespace TriangularGridPrinter {
     }
 
     return {
-      // print: (ctx, coord, color, width, height) => {
-      //   const xrgh = transform(coord.x * size, coord.y * size);
-      //   const xbtm = transform((coord.x + 1) * size, coord.y * size);
-      //   const xlft = transform((coord.x + 1) * size, (coord.y + 1) * size);
-      //   const xtop = transform(coord.x * size, (coord.y + 1) * size);
-
-      //   if (xtop[1] > (height - 20) / 2) {
-      //     return;
-      //   }
-      //   if (xbtm[1] < -(height - 20) / 2) {
-      //     return;
-      //   }
-      //   if (xlft[0] < -(width - 20) / 2) {
-      //     return;
-      //   }
-      //   if (xrgh[0] > (width - 20) / 2) {
-      //     return;
-      //   }
-
-      //   ctx.save();
-
-      //   ctx.beginPath();
-      //   ctx.moveTo(...xtop);
-      //   // ctx.lineTo(...xlft);
-      //   ctx.lineTo(...xbtm);
-      //   if (coord.side === 'l') {
-      //     ctx.lineTo(...xlft);
-      //   } else {
-      //     ctx.lineTo(...xrgh);
-      //   }
-      //   ctx.closePath();
-      //   ctx.fillStyle = color;
-      //   ctx.fill();
-
-      //   ctx.restore();
-      // },
       resolveFour: coord => {
         const xrgh = toObj(transform(coord.x * size, coord.y * size));
         const xbtm = toObj(transform((coord.x + 1) * size, coord.y * size));
@@ -125,6 +89,26 @@ namespace TriangularGridPrinter {
       },
     };
   }
+
+  export function move(
+    coord: TriangularGrid.TriangularCoordinate,
+    xMove: number,
+    yMove: number = 0
+  ): TriangularGrid.TriangularCoordinate {
+    return {
+      side: coord.side,
+      x: coord.x + xMove + yMove,
+      y: coord.y + xMove - yMove,
+    };
+  }
+
+  export function moveAll(
+    coords: Array<TriangularGrid.TriangularCoordinate>,
+    xMove: number,
+    yMove: number = 0
+  ): Array<TriangularGrid.TriangularCoordinate> {
+    return coords.map(c => move(c, xMove, yMove));
+  }
 }
 
-export default TriangularGridPrinter;
+export default TriangularGridUtil;

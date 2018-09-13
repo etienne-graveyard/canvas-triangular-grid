@@ -1,6 +1,6 @@
-import TriangularGridPrinter from '../utils/TriangularGridPrinter';
+import TriangularGridUtil from '../utils/TriangularGridUtil';
 
-const gridPrinter = TriangularGridPrinter.create({ size: 6 });
+const gridPrinter = TriangularGridUtil.create({ size: 6 });
 
 const effects = {
   grid: gridPrinter,

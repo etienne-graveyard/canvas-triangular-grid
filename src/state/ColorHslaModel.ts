@@ -45,6 +45,15 @@ namespace ColorHlsaModel {
     };
   }
 
+  export function createStatic(t: number, from: StateResolved): State {
+    return {
+      hue: AnimatedModel.createStatic(t, from.hue),
+      saturation: AnimatedModel.createStatic(t, from.saturation),
+      lightness: AnimatedModel.createStatic(t, from.lightness),
+      alpha: AnimatedModel.createStatic(t, from.alpha),
+    };
+  }
+
   export function transitionTo(current: State, t: number, to: StateResolved, delay: number, duration: number): State {
     AnimatedModel.transitionTo(current.hue, t, to.hue, delay, duration);
     AnimatedModel.transitionTo(current.saturation, t, to.saturation, delay, duration);

@@ -28,6 +28,10 @@ namespace AnimatedModel {
     return [{ delay: t + delay, value: from }, { delay: duration, value: to }];
   }
 
+  export function createStatic(t: number, value: number): State {
+    return [{ delay: t, value }];
+  }
+
   export function cleanup(model: State, t: number): void {
     const info = getInfos(model, t);
     // delete all passed steps
