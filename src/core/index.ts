@@ -1,6 +1,6 @@
 import { timeSinceLastFrame, currentFrameTime, onFrameStart, onFrameEnd } from 'framesync';
 // import ProxyStateTree from 'proxy-state-tree';
-import createCanvas from './createCanvas';
+import { createCanvas, setupCanvas } from './createCanvas';
 
 type MutationEffects = {
   dt: number;
@@ -37,6 +37,7 @@ type Options<State extends object, UserEffects extends object> = {
   height: number;
   density?: number;
   effects: UserEffects;
+  canvas?: HTMLCanvasElement;
 };
 
 class App<State extends object, UserEffects extends object> {
@@ -54,7 +55,10 @@ class App<State extends object, UserEffects extends object> {
   constructor(options: Options<State, UserEffects>) {
     const { density = 1, width, height, state, effects } = options;
     this.userEffects = effects;
-    const { el, ctx } = createCanvas(width, height, density);
+    const { el, ctx } = options.canvas
+      ? setupCanvas(options.canvas, width, height, density)
+      : createCanvas(width, height, density);
+    this.mounted = options.canvas !== undefined;
     this.canvasEl = el;
     this.ctx = ctx;
     this.width = width;

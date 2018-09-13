@@ -28,10 +28,10 @@ range(-squareSize, squareSize).map(x => {
   });
 });
 
-const icons = [arrow];
-let iconSwitch: number = 0;
+// const icons = [arrow];
+// let iconSwitch: number = 0;
 let iconHue = Math.random() * 360;
-const duration = 200;
+// const duration = 200;
 
 // app.mutate((state, { t }) => {
 //   search.map(coord => {
@@ -50,13 +50,13 @@ const duration = 200;
 //   });
 // });
 
-function getDelay(coord: TriangularGrid.TriangularCoordinate): number {
-  return (Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 50;
-}
+// function getDelay(coord: TriangularGrid.TriangularCoordinate): number {
+//   return (Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 50;
+// }
 
-function getHue(coord: TriangularGrid.TriangularCoordinate): number {
-  return ((Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 10) % 360;
-}
+// function getHue(coord: TriangularGrid.TriangularCoordinate): number {
+//   return ((Math.min(Math.abs(coord.x), Math.abs(coord.y)) + Math.abs(coord.x - coord.y)) * 10) % 360;
+// }
 
 app.addEventListener('click', (ev, { grid, ctx, width, height, t }) => {
   // const x = ev.pageX - width / 2;
