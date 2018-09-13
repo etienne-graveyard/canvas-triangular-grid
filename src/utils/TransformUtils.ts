@@ -33,8 +33,6 @@ namespace TransformUtils {
     return {
       apply: app.connect(({ ctx, width, height }) => {
         applyed = true;
-        // console.log(options.x({ width, height }), options.y({ width, height }));
-
         ctx.translate(options.x({ width, height }), options.y({ width, height }));
         ctx.scale(1, -1);
       }),

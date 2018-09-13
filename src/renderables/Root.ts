@@ -1,9 +1,6 @@
 import { Renderable, connect } from '../types';
 import TriangularGrid from '../state/TriangularGrid';
 import Triangle from './Triangle';
-// import ColorHlsaModel from '../state/ColorHslaModel';
-// import AnimatedModel from '../state/AnimatedModel';
-// import range from '../utils/range';
 
 const Root: Renderable = ({ ctx, width, height, state, grid, t, transform }) => {
   ctx.fillStyle = `white`;
@@ -18,7 +15,6 @@ const Root: Renderable = ({ ctx, width, height, state, grid, t, transform }) => 
 
   ctx.fillStyle = 'red';
   ctx.fillRect(topleft.x - 10, topleft.y - 10, 20, 20);
-  // ctx.fillRect(0 - 10, 0 - 10, 20, 20);
 
   TriangularGrid.entries(state.grid).map(([coord, color]) => {
     Triangle({ coord, color });
