@@ -2,6 +2,7 @@ import Root from './renderables/Root';
 import app from './app';
 import TriangularGrid from './state/TriangularGrid';
 import search from './data/icons/search';
+import ColorHlsaModel from './state/ColorHslaModel';
 
 declare const module: {
   hot?: {
@@ -13,9 +14,18 @@ declare const module: {
 app.mountOnBody();
 app.render(Root);
 
-app.mutate(state => {
+app.mutate((state, { t }) => {
   search.map(coord => {
-    TriangularGrid.set(state.grid, coord, true);
+    TriangularGrid.set(
+      state.grid,
+      coord,
+      ColorHlsaModel.createFromTo(
+        ColorHlsaModel.createResolved(Math.random() * 360, 50, 50, 0),
+        ColorHlsaModel.createResolved(Math.random() * 360, 50, 50),
+        t,
+        2000
+      )
+    );
   });
 });
 
@@ -23,11 +33,22 @@ app.addEventListener('click', (ev, { grid, ctx, width, height }) => {
   const x = ev.clientX - width / 2;
   const y = -(ev.clientY - height / 2);
   const coord = grid.resolve(x, y);
-  app.mutate(state => {
+  app.mutate((state, { t }) => {
     if (TriangularGrid.has(state.grid, coord)) {
-      TriangularGrid.updateIfExist(state.grid, coord, v => !v);
+      TriangularGrid.updateIfExist(state.grid, coord, elem =>
+        ColorHlsaModel.transitionFrom(elem, t, ColorHlsaModel.createResolved(Math.random() * 360, 50, 50), t, 2000)
+      );
     } else {
-      TriangularGrid.set(state.grid, coord, true);
+      TriangularGrid.set(
+        state.grid,
+        coord,
+        ColorHlsaModel.createFromTo(
+          ColorHlsaModel.createResolved(Math.random() * 360, 50, 50, 0),
+          ColorHlsaModel.createResolved(Math.random() * 360, 50, 50),
+          t,
+          2000
+        )
+      );
     }
   });
 });

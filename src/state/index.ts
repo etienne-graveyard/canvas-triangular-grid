@@ -1,7 +1,8 @@
 import TriangularGrid from './TriangularGrid';
+import ColorHlsaModel from './ColorHslaModel';
 
 type State = {
-  grid: TriangularGrid.State<boolean>;
+  grid: TriangularGrid.State<ColorHlsaModel>;
 };
 
 const state: State = {

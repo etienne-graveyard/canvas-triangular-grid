@@ -8,7 +8,7 @@ namespace TriangularGridPrinter {
   };
 
   export type Printer = {
-    print(ctx: CanvasRenderingContext2D, coord: TriangularGrid.TriangularCoordinate): void;
+    print(ctx: CanvasRenderingContext2D, coord: TriangularGrid.TriangularCoordinate, color: string): void;
     resolve(x: number, y: number): TriangularGrid.TriangularCoordinate;
   };
 
@@ -43,7 +43,7 @@ namespace TriangularGridPrinter {
     }
 
     return {
-      print: (ctx, coord) => {
+      print: (ctx, coord, color) => {
         ctx.save();
 
         const xrgh = transform(coord.x * size, coord.y * size);
@@ -61,26 +61,8 @@ namespace TriangularGridPrinter {
           ctx.lineTo(...xrgh);
         }
         ctx.closePath();
-
-        // ctx.beginPath();
-        // ctx.moveTo(0, -gridYUnit);
-        // ctx.lineTo(gridXUnit, 0);
-        // ctx.lineTo(0, gridYUnit);
-        // ctx.closePath();
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = color;
         ctx.fill();
-
-        // debug
-        // if (coord.side === 'l') {
-        //   ctx.beginPath();
-        //   ctx.moveTo(...antiTransform(...transform(0, 0)));
-        //   ctx.lineTo(...antiTransform(...transform(0, size)));
-        //   ctx.lineTo(...antiTransform(...transform(size, size)));
-        //   ctx.lineTo(...antiTransform(...transform(size, 0)));
-        //   ctx.closePath();
-        //   ctx.strokeStyle = 'blue';
-        //   ctx.stroke();
-        // }
 
         ctx.restore();
       },

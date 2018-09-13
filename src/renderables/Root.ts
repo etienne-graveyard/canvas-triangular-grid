@@ -1,9 +1,10 @@
 import { Renderable, connect } from '../types';
 import TriangularGrid from '../state/TriangularGrid';
+import ColorHlsaModel from '../state/ColorHslaModel';
 // import Triangle from './Triangle';
 // import range from '../utils/range';
 
-const Root: Renderable = ({ ctx, width, height, state, grid }) => {
+const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
   ctx.fillStyle = `rgb(200, 200, 200)`;
   ctx.fillRect(0, 0, width, height);
 
@@ -17,10 +18,8 @@ const Root: Renderable = ({ ctx, width, height, state, grid }) => {
 
   // console.log(TriangularGrid.entries(state.grid));
 
-  TriangularGrid.entries(state.grid).map(([coord, show]) => {
-    if (show) {
-      grid.print(ctx, coord);
-    }
+  TriangularGrid.entries(state.grid).map(([coord, color]) => {
+    grid.print(ctx, coord, ColorHlsaModel.toString(color, t));
   });
 
   // Triangle({});
