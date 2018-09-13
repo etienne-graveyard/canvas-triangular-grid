@@ -1,0 +1,19 @@
+{
+  "name": "triangular-grid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "framesync": "3.1.9",
+    "proxy-state-tree": "1.0.0-1536089502938"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.6.1",
+    "typescript": "^3.0.3"
+  },
+  "keywords": []
+}
