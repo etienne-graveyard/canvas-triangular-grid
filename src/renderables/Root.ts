@@ -1,11 +1,12 @@
 import { Renderable, connect } from '../types';
 import TriangularGrid from '../state/TriangularGrid';
 import ColorHlsaModel from '../state/ColorHslaModel';
+import AnimatedModel from '../state/AnimatedModel';
 // import Triangle from './Triangle';
 // import range from '../utils/range';
 
 const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
-  ctx.fillStyle = `rgb(200, 200, 200)`;
+  ctx.fillStyle = `white`;
   ctx.fillRect(0, 0, width, height);
 
   ctx.translate(width / 2, height / 2);
@@ -19,7 +20,10 @@ const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
   // console.log(TriangularGrid.entries(state.grid));
 
   TriangularGrid.entries(state.grid).map(([coord, color]) => {
-    grid.print(ctx, coord, ColorHlsaModel.toString(color, t));
+    const alpha = AnimatedModel.resolve(color.alpha, t);
+    if (alpha > 0) {
+      grid.print(ctx, coord, ColorHlsaModel.toString(color, t));
+    }
   });
 
   // Triangle({});

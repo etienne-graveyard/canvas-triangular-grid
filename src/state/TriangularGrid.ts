@@ -50,6 +50,15 @@ namespace TriangularGrid {
     return DldcMap.updateIfExist(model, serializeCoord(coord), updater);
   }
 
+  export function update<V>(
+    model: State<V>,
+    coord: TriangularCoordinate,
+    updater: (value: V) => V,
+    notSetValue: V
+  ): void {
+    return DldcMap.update(model, serializeCoord(coord), updater, notSetValue);
+  }
+
   export function get<V>(model: State<V>, coord: TriangularCoordinate): V {
     return DldcMap.getOrThrow(model, serializeCoord(coord));
   }
