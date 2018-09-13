@@ -9,7 +9,8 @@ const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
   ctx.fillStyle = `white`;
   ctx.fillRect(0, 0, width, height);
 
-  ctx.translate(width / 2, height / 2);
+  const rightMargin = 10;
+  ctx.translate(width - height / 2 - rightMargin, height / 2);
   ctx.scale(1, -1);
 
   // axis

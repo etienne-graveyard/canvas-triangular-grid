@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "framesync": "3.1.9",
-    "proxy-state-tree": "1.0.0-1536089502938"
+    "proxy-state-tree": "^1.0.2"
   },
   "devDependencies": {
     "parcel-bundler": "^1.6.1",
