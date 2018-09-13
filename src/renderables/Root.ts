@@ -2,7 +2,7 @@ import { Renderable, connect } from '../types';
 import TriangularGrid from '../state/TriangularGrid';
 import ColorHlsaModel from '../state/ColorHslaModel';
 import AnimatedModel from '../state/AnimatedModel';
-// import Triangle from './Triangle';
+import Triangle from './Triangle';
 // import range from '../utils/range';
 
 const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
@@ -20,13 +20,8 @@ const Root: Renderable = ({ ctx, width, height, state, grid, t }) => {
   // console.log(TriangularGrid.entries(state.grid));
 
   TriangularGrid.entries(state.grid).map(([coord, color]) => {
-    const alpha = AnimatedModel.resolve(color.alpha, t);
-    if (alpha > 0) {
-      grid.print(ctx, coord, ColorHlsaModel.toString(color, t));
-    }
+    Triangle({ coord, color });
   });
-
-  // Triangle({});
 };
 
 export default connect(Root);

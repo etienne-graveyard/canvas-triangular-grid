@@ -49,6 +49,7 @@ class App<State extends object, UserEffects extends object> {
   private density: number = 1;
   private eventsListeners: Map<keyof HTMLElementEventMap, Array<any>> = new Map();
   private userEffects: UserEffects;
+  private state: State;
 
   constructor(options: Options<State, UserEffects>) {
     const { density = 1, width, height, state, effects } = options;
@@ -60,7 +61,7 @@ class App<State extends object, UserEffects extends object> {
     this.height = height;
     this.density = density;
     this.applySize();
-    // this.state = state;
+    this.state = state;
     this.tree = new ProxyStateTree(state);
     this.renderSub = this.renderSub.bind(this);
     this.connect = this.connect.bind(this);
@@ -132,22 +133,39 @@ class App<State extends object, UserEffects extends object> {
     return this.canvasEl.addEventListener(type, wrappedListener, options);
   }
 
+  // mutate(mutation: (state: State, context: MutationEffects) => void): void {
+  //   this.tree.startMutationTracking();
+  //   mutation(this.tree.get(), {
+  //     dt: timeSinceLastFrame(),
+  //     t: currentFrameTime(),
+  //     width: this.width,
+  //     height: this.height,
+  //   });
+  //   this.tree.clearMutationTracking();
+  //   onFrameEnd(() => {
+  //     this.tree.flush();
+  //   });
+  // }
+
   mutate(mutation: (state: State, context: MutationEffects) => void): void {
-    this.tree.startMutationTracking();
-    mutation(this.tree.get(), {
+    mutation(this.state, {
       dt: timeSinceLastFrame(),
       t: currentFrameTime(),
       width: this.width,
       height: this.height,
     });
-    this.tree.clearMutationTracking();
-    onFrameEnd(() => {
-      this.tree.flush();
-    });
+    // this.tree.clearMutationTracking();
+    // onFrameEnd(() => {
+    //   this.tree.flush();
+    // });
   }
 
+  // getState(): State {
+  //   return this.tree.get();
+  // }
+
   getState(): State {
-    return this.tree.get();
+    return this.state;
   }
 
   connect<Props extends object, Output = void>(
@@ -164,7 +182,7 @@ class App<State extends object, UserEffects extends object> {
       height: this.height,
       ctx: this.ctx,
       render: this.renderSub,
-      state: this.tree.get(),
+      state: this.state, // this.tree.get(),
       app: this,
     };
     return {

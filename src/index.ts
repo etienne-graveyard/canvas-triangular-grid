@@ -14,7 +14,7 @@ declare const module: {
   };
 };
 
-const squareSize = 8;
+const squareSize = 26;
 const square: Array<TriangularGrid.TriangularCoordinate> = [];
 range(-squareSize, squareSize).map(x => {
   range(-squareSize, squareSize).map(y => {

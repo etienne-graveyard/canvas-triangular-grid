@@ -7,9 +7,18 @@ namespace TriangularGridPrinter {
     size: number;
   };
 
+  type Coord = { x: number; y: number };
+  type CoordFour = {
+    xrgh: Coord;
+    xbtm: Coord;
+    xlft: Coord;
+    xtop: Coord;
+  };
+
   export type Printer = {
-    print(ctx: CanvasRenderingContext2D, coord: TriangularGrid.TriangularCoordinate, color: string): void;
-    resolve(x: number, y: number): TriangularGrid.TriangularCoordinate;
+    resolve(coord: TriangularGrid.TriangularCoordinate): Coord;
+    resolveFour(coord: TriangularGrid.TriangularCoordinate): CoordFour;
+    antiResolve(x: number, y: number): TriangularGrid.TriangularCoordinate;
   };
 
   export function create(options: Options): Printer {
@@ -42,31 +51,63 @@ namespace TriangularGridPrinter {
       return rotate(-trAngle)(scale(1 / trScaleX, 1 / trScaleY)(move(-trMoveX)([x, y])));
     }
 
+    function toObj(val: [number, number]): { x: number; y: number } {
+      return { x: val[0], y: val[1] };
+    }
+
     return {
-      print: (ctx, coord, color) => {
-        ctx.save();
+      // print: (ctx, coord, color, width, height) => {
+      //   const xrgh = transform(coord.x * size, coord.y * size);
+      //   const xbtm = transform((coord.x + 1) * size, coord.y * size);
+      //   const xlft = transform((coord.x + 1) * size, (coord.y + 1) * size);
+      //   const xtop = transform(coord.x * size, (coord.y + 1) * size);
 
-        const xrgh = transform(coord.x * size, coord.y * size);
-        const xtop = transform((coord.x + 1) * size, coord.y * size);
-        const xlft = transform((coord.x + 1) * size, (coord.y + 1) * size);
-        const xbtm = transform(coord.x * size, (coord.y + 1) * size);
+      //   if (xtop[1] > (height - 20) / 2) {
+      //     return;
+      //   }
+      //   if (xbtm[1] < -(height - 20) / 2) {
+      //     return;
+      //   }
+      //   if (xlft[0] < -(width - 20) / 2) {
+      //     return;
+      //   }
+      //   if (xrgh[0] > (width - 20) / 2) {
+      //     return;
+      //   }
 
-        ctx.beginPath();
-        ctx.moveTo(...xtop);
-        // ctx.lineTo(...xlft);
-        ctx.lineTo(...xbtm);
-        if (coord.side === 'l') {
-          ctx.lineTo(...xlft);
-        } else {
-          ctx.lineTo(...xrgh);
-        }
-        ctx.closePath();
-        ctx.fillStyle = color;
-        ctx.fill();
+      //   ctx.save();
 
-        ctx.restore();
+      //   ctx.beginPath();
+      //   ctx.moveTo(...xtop);
+      //   // ctx.lineTo(...xlft);
+      //   ctx.lineTo(...xbtm);
+      //   if (coord.side === 'l') {
+      //     ctx.lineTo(...xlft);
+      //   } else {
+      //     ctx.lineTo(...xrgh);
+      //   }
+      //   ctx.closePath();
+      //   ctx.fillStyle = color;
+      //   ctx.fill();
+
+      //   ctx.restore();
+      // },
+      resolveFour: coord => {
+        const xrgh = toObj(transform(coord.x * size, coord.y * size));
+        const xbtm = toObj(transform((coord.x + 1) * size, coord.y * size));
+        const xlft = toObj(transform((coord.x + 1) * size, (coord.y + 1) * size));
+        const xtop = toObj(transform(coord.x * size, (coord.y + 1) * size));
+        return {
+          xrgh,
+          xbtm,
+          xlft,
+          xtop,
+        };
       },
-      resolve: (xVal, yVal) => {
+      resolve: (coord: TriangularGrid.TriangularCoordinate) => {
+        return toObj(transform(coord.x * size, coord.y * size));
+      },
+      antiResolve: (xVal, yVal) => {
         const [x, y] = antiTransform(xVal, yVal);
         const gridXProgress = x / size;
         const gridYProgress = y / size;
