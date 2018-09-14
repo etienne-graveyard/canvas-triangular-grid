@@ -9,7 +9,7 @@ export type Props = {
 };
 
 const Triangle: Renderable<Props> = ({ ctx, width, height, state, grid, coord, t, color }) => {
-  const { xbtm, xlft, xrgh, xtop } = grid.resolveLinearSquare(coord);
+  const { xbtm, xlft, xrgh, xtop } = grid.resolveRectangularSquare(coord);
   // if (xtop.y > (height - 20) / 2) {
   //   return;
   // }

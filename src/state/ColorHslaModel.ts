@@ -30,6 +30,13 @@ namespace ColorHlsaModel {
     return { hue, saturation, lightness, alpha };
   }
 
+  export function setAlpha(color: StateResolved, newAlpha: number): StateResolved {
+    return {
+      ...color,
+      alpha: newAlpha,
+    };
+  }
+
   export function createFromTo(
     t: number,
     from: StateResolved,
@@ -54,13 +61,25 @@ namespace ColorHlsaModel {
     };
   }
 
-  export function transitionTo(current: State, t: number, to: StateResolved, delay: number, duration: number): State {
-    AnimatedModel.transitionTo(current.hue, t, to.hue, delay, duration);
-    AnimatedModel.transitionTo(current.saturation, t, to.saturation, delay, duration);
-    AnimatedModel.transitionTo(current.lightness, t, to.lightness, delay, duration);
-    AnimatedModel.transitionTo(current.alpha, t, to.alpha, delay, duration);
+  /**
+   * Mutation
+   */
+
+  function transitionTo(current: State, t: number, to: StateResolved, delay: number, duration: number): State {
+    AnimatedModel.mutate.transitionTo(current.hue, t, to.hue, delay, duration);
+    AnimatedModel.mutate.transitionTo(current.saturation, t, to.saturation, delay, duration);
+    AnimatedModel.mutate.transitionTo(current.lightness, t, to.lightness, delay, duration);
+    AnimatedModel.mutate.transitionTo(current.alpha, t, to.alpha, delay, duration);
     return current;
   }
+
+  export const mutate = {
+    transitionTo,
+  };
+
+  /**
+   * Exports
+   */
 
   export function resolve(model: State, t: number): StateResolved {
     return {

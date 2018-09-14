@@ -24,6 +24,10 @@ namespace AnimatedModel {
     );
   }
 
+  /**
+   * Create
+   */
+
   export function createFromTo(t: number, from: number, to: number, delay: number, duration: number): State {
     return [{ delay: t + delay, value: from }, { delay: duration, value: to }];
   }
@@ -32,7 +36,11 @@ namespace AnimatedModel {
     return [{ delay: t, value }];
   }
 
-  export function cleanup(model: State, t: number): void {
+  /**
+   * Mutate
+   */
+
+  function cleanup(model: State, t: number): void {
     const info = getInfos(model, t);
     // delete all passed steps
     if (info.index > 0) {
@@ -41,15 +49,7 @@ namespace AnimatedModel {
     }
   }
 
-  /**
-   *
-   * @param model
-   * @param t now time
-   * @param toValue
-   * @param delay delay after now
-   * @param duration
-   */
-  export function transitionTo(model: State, t: number, toValue: number, delay: number, duration: number): void {
+  function transitionTo(model: State, t: number, toValue: number, delay: number, duration: number): void {
     cleanup(model, t);
     const start = t + delay;
     const info = getInfos(model, start);
@@ -66,6 +66,15 @@ namespace AnimatedModel {
     model.splice(info.index + 1);
     model.push({ delay: newDelayForLast, value: valueAtStart }, { delay: duration, value: toValue });
   }
+
+  export const mutate = {
+    transitionTo,
+    cleanup,
+  };
+
+  /**
+   * Exports
+   */
 
   export function resolve(model: State, t: number): number {
     if (model.length === 0) {

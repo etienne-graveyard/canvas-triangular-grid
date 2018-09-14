@@ -18,8 +18,8 @@ namespace TriangularGridUtils {
   };
 
   export type Printer = {
-    resolveLiniear(coord: Coord): Coord;
-    resolveLinearSquare(coord: Coord): CoordFour;
+    resolveRectangular(coord: Coord): Coord;
+    resolveRectangularSquare(coord: Coord): CoordFour;
     resolveTriangular(x: number, y: number): Coord;
     resolveTriangularCoord(x: number, y: number): TriangularGrid.Coordinate;
   };
@@ -59,7 +59,7 @@ namespace TriangularGridUtils {
     }
 
     return {
-      resolveLinearSquare: coord => {
+      resolveRectangularSquare: coord => {
         const xrgh = toObj(transform(coord.x * size, coord.y * size));
         const xbtm = toObj(transform((coord.x + 1) * size, coord.y * size));
         const xlft = toObj(transform((coord.x + 1) * size, (coord.y + 1) * size));
@@ -71,7 +71,7 @@ namespace TriangularGridUtils {
           xtop,
         };
       },
-      resolveLiniear: (coord: TriangularGrid.Coordinate) => {
+      resolveRectangular: (coord: TriangularGrid.Coordinate) => {
         return toObj(transform(coord.x * size, coord.y * size));
       },
       resolveTriangular: (xVal, yVal) => {

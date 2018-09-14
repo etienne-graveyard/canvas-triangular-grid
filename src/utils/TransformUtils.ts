@@ -8,7 +8,14 @@ namespace TransformUtils {
 
   export type Output = {
     apply: () => void;
-    reverse: (x: number, y: number) => { x: number; y: number };
+    // from initial to transformed
+    transform: (x: number, y: number) => { x: number; y: number };
+    transformX: (x: number) => number;
+    transformY: (y: number) => number;
+    // from transformed to initial
+    revert: (x: number, y: number) => { x: number; y: number };
+    revertX: (x: number) => number;
+    revertY: (y: number) => number;
   };
 
   export function create(options: Options, app: TApp): Output {
@@ -18,7 +25,7 @@ namespace TransformUtils {
       applyed = false;
     });
 
-    const reverseConnected = app.connect<{ x: number; y: number }, { x: number; y: number }>(
+    const transformConnected = app.connect<{ x: number; y: number }, { x: number; y: number }>(
       ({ width, height, x, y }) => {
         if (applyed === false) {
           console.warn(`Transform was not applyed !`);
@@ -30,13 +37,30 @@ namespace TransformUtils {
       }
     );
 
+    const revertConnected = app.connect<{ x: number; y: number }, { x: number; y: number }>(
+      ({ width, height, x, y }) => {
+        if (applyed === false) {
+          console.warn(`Transform was not applyed !`);
+        }
+        return {
+          x: x + options.x({ width, height }),
+          y: -(y + options.y({ width, height })),
+        };
+      }
+    );
+
     return {
       apply: app.connect(({ ctx, width, height }) => {
         applyed = true;
         ctx.translate(options.x({ width, height }), options.y({ width, height }));
         ctx.scale(1, -1);
       }),
-      reverse: (x, y) => reverseConnected({ x, y }),
+      transform: (x, y) => transformConnected({ x, y }),
+      transformX: x => transformConnected({ x, y: 0 }).x,
+      transformY: y => transformConnected({ x: 0, y }).y,
+      revert: (x, y) => revertConnected({ x, y }),
+      revertX: x => revertConnected({ x, y: 0 }).x,
+      revertY: y => revertConnected({ x: 0, y }).y,
     };
   }
 }
