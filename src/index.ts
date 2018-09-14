@@ -122,7 +122,7 @@ input.addEventListener('focus', () => {
         coord,
         color => {
           ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 50);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 100);
+          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 50);
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
@@ -166,8 +166,8 @@ input.addEventListener('blur', () => {
         state.grid,
         coord,
         color => {
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 50);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 100);
+          ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 0);
+          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 0);
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
@@ -202,8 +202,8 @@ input.addEventListener('input', () => {
         state.grid,
         coord,
         color => {
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 50);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 100);
+          ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 20);
+          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 20);
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
