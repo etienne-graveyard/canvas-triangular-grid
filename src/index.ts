@@ -77,11 +77,11 @@ app.mutate((state, { t }) => {
       state.grid,
       coord,
       color => {
-        ColorHlsaModel.mutate.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 10), 0, 100);
-        // ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 10), 700, 100);
+        ColorHlsaModel.mutate.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 10), 0, 3000);
+        // ColorHlsaModel.mutate.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 90), 1000, 1000);
         return color;
       },
-      ColorHlsaModel.createStatic(t, mainColor)
+      ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
     );
   });
 });

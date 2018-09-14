@@ -14,7 +14,7 @@ namespace AnimatedModel {
     return state.reduce<Infos>(
       (acc, v, index) => {
         const time = acc.prevTime + v.delay;
-        if (time < t) {
+        if (time <= t) {
           return { index, time, prevTime: time };
         }
         acc.prevTime = time;
@@ -23,6 +23,11 @@ namespace AnimatedModel {
       { index: -1, time: 0, prevTime: 0 }
     );
   }
+
+  const test1: State = [{ delay: 0, value: 100 }];
+  console.log(test1, 0, getInfos(test1, 0));
+  console.log(test1, -100, getInfos(test1, -100));
+  console.log(test1, 100, getInfos(test1, 100));
 
   /**
    * Create
@@ -52,19 +57,31 @@ namespace AnimatedModel {
   function transitionTo(model: State, t: number, toValue: number, delay: number, duration: number): void {
     cleanup(model, t);
     const start = t + delay;
-    const info = getInfos(model, start);
-    if (info.index === model.length - 1) {
+    const infoAtStart = getInfos(model, start);
+    if (infoAtStart.index === model.length - 1) {
       // new annim is after => just push
       const last = model[model.length - 1];
-      const delayAfterLast = start - info.time;
+      const delayAfterLast = start - infoAtStart.time;
       model.push({ delay: delayAfterLast, value: last.value }, { delay: duration, value: toValue });
       return;
     }
+    const end = start + duration;
+    const infoAtEnd = getInfos(model, end);
+    const valueAtEnd = resolve(model, end);
     const valueAtStart = resolve(model, start);
-    const newDelayForLast = start - info.time;
-    // remove all after start
-    model.splice(info.index + 1);
-    model.push({ delay: newDelayForLast, value: valueAtStart }, { delay: duration, value: toValue });
+    const stepsToRemove = infoAtEnd.index - infoAtStart.index + 1;
+    const newDelayForBeforeStart = start - infoAtStart.time;
+    const beforeEndIndex = infoAtEnd.index;
+    const hasAfter = model[infoAtEnd.index + 1] !== undefined;
+
+    const newSteps = [
+      newDelayForBeforeStart > 0 ? { delay: newDelayForBeforeStart, value: valueAtStart } : null,
+      { delay: duration, value: toValue },
+    ].filter((v): v is StateStep => v !== null);
+
+    model.splice(infoAtStart.index + 1, stepsToRemove, ...newSteps);
+
+    // const newDelayForAfterEnd
   }
 
   export const mutate = {
