@@ -152,7 +152,7 @@ input.addEventListener('blur', () => {
       })();
       const delay = (height / 2 - dist) * 5;
       const maxAlpha = 0.7 + Math.random() * 0.2;
-      const isSearch = searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
+      const isSearch = false; // searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
       const colors = isSearch
         ? {
             from: ColorHlsaModel.createResolved(0, 0, 10),
@@ -186,8 +186,8 @@ input.addEventListener('input', () => {
       const coordLinear = grid.resolveRectangular(coord);
       const x = coordLinear.x + width;
       const dist = Math.sqrt(x * x + coordLinear.y * coordLinear.y);
-      const delay = dist;
-      const maxAlpha = 0.7 + Math.random() * 0.2;
+      const delay = dist + Math.abs(coordLinear.y);
+      const maxAlpha = 0.3 + Math.random() * 0.1;
       const isSearch = searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
       const colors = isSearch
         ? {
@@ -203,7 +203,7 @@ input.addEventListener('input', () => {
         coord,
         color => {
           ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 20);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 20);
+          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 50, 20);
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
