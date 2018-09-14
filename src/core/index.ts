@@ -148,6 +148,10 @@ class App<State extends object, UserEffects extends object> {
     mutation(this.state, this.getEffects({}));
   }
 
+  withEffects(action: (effects: Effects<State, UserEffects, {}>) => void): void {
+    action(this.getEffects({}));
+  }
+
   getState(): State {
     return this.state;
   }

@@ -18,65 +18,91 @@ const input: HTMLInputElement = document.getElementById('search-input') as any;
 
 app.render(Root);
 
+/**
+ * Generate grid
+ */
+
+const all: Array<TriangularGrid.Coordinate> = [];
+
+app.withEffects(({ transform, width, height, grid }) => {
+  const corners = {
+    toplft: transform.reverse(0, 0),
+    toprgh: transform.reverse(width, 0),
+    btmrgh: transform.reverse(width, height),
+    btmlft: transform.reverse(0, height),
+  };
+
+  const cornersTriangular = [corners.toplft, corners.toprgh, corners.btmrgh, corners.btmlft].map(p =>
+    grid.resolveTriangular(p.x, p.y)
+  );
+
+  const left = Math.floor(Math.min(...cornersTriangular.map(p => p.x)));
+  const right = Math.floor(Math.max(...cornersTriangular.map(p => p.x))) + 1;
+  const bottom = Math.floor(Math.min(...cornersTriangular.map(p => p.y)));
+  const top = Math.floor(Math.max(...cornersTriangular.map(p => p.y))) + 1;
+
+  range(left, right).map(x => {
+    range(bottom, top).map(y => {
+      (['l', 'r'] as Array<'l' | 'r'>).map(side => {
+        const coord: TriangularGrid.Coordinate = { x, y, side };
+        const { xbtm, xlft, xrgh, xtop } = grid.resolveLinearSquare(coord);
+        const margin = 3;
+        if (xtop.y > corners.toplft.y + margin) {
+          return;
+        }
+        if (xbtm.y < corners.btmlft.y - 2 - margin) {
+          return;
+        }
+        if (xlft.x < corners.btmlft.x + 5 - margin) {
+          return;
+        }
+        if (xrgh.x > corners.btmrgh.x - 5 + margin) {
+          return;
+        }
+        all.push(coord);
+      });
+    });
+  });
+});
+
 let iconHue = Math.random() * 360;
 
 input.addEventListener('input', () => {
   console.log('input');
 
-  app.mutate((state, { width, height, t, grid }) => {
-    iconHue = Math.random() * 360;
+  app.mutate((state, { width, height, t, grid, transform }) => {
+    // iconHue = Math.random() * 360;
 
-    const all: Array<TriangularGrid.Coordinate> = [];
-
-    range(-20, 5).map(x => {
-      range(-5, 5).map(y => {
-        (['l', 'r'] as Array<'l' | 'r'>).map(side => {
-          const coord: TriangularGrid.Coordinate = { x, y, side };
-          const { xbtm, xlft, xrgh, xtop } = grid.resolveFour(coord);
-          if (xtop[1] > (height - 20) / 2) {
-            return;
-          }
-          if (xbtm[1] < -(height - 20) / 2) {
-            return;
-          }
-          if (xlft[0] < -(width - 20) / 2) {
-            return;
-          }
-          if (xrgh[0] > (width - 20) / 2) {
-            return;
-          }
-          all.push(coord);
-        });
-      });
-    });
-
-    all.map(coord => {
+    all.map((coord, index) => {
+      const coordLinear = grid.resolveLiniear(coord);
+      const x = coordLinear.x + width;
+      const dist = Math.sqrt(x * x + coordLinear.y * coordLinear.y);
+      const delay = dist;
+      const maxAlpha = 0.7 + Math.random() * 0.2;
       TriangularGrid.update(
         state.grid,
         coord,
         color => {
-          ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50, 1), 0, 200);
-          // ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50, 0), 10, 100);
+          ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50, maxAlpha), delay, 50);
+          ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50, 0), delay + 50, 100);
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.createResolved(iconHue, 50, 50, 0))
       );
     });
 
-    // search.map(coord => {
-    //   const delay = 0;
-    //   const maxAlpha = 1;
-    //   TriangularGrid.update(
-    //     state.grid,
-    //     coord,
-    //     color => {
-    //       ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50, maxAlpha), delay, 0);
-    //       ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(iconHue, 50, 50, 0), delay + 10, 100);
-    //       return color;
-    //     },
-    //     ColorHlsaModel.createStatic(t, ColorHlsaModel.createResolved(iconHue, 50, 50, 0))
-    //   );
-    // });
+    search.map(coord => {
+      TriangularGrid.update(
+        state.grid,
+        coord,
+        color => {
+          ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 90, 0), 400, 100);
+          ColorHlsaModel.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 10), 700, 100);
+          return color;
+        },
+        ColorHlsaModel.createStatic(t, ColorHlsaModel.createResolved(iconHue, 50, 50, 0))
+      );
+    });
 
     // range(-10, 0).map(x => {
     //   TriangularGridUtils.moveAll(arrow, x).map(coord => {

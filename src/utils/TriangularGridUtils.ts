@@ -9,6 +9,7 @@ namespace TriangularGridUtils {
   };
 
   type Coord = { x: number; y: number };
+
   type CoordFour = {
     xrgh: Coord;
     xbtm: Coord;
@@ -17,9 +18,10 @@ namespace TriangularGridUtils {
   };
 
   export type Printer = {
-    resolve(coord: TriangularGrid.Coordinate): Coord;
-    resolveFour(coord: TriangularGrid.Coordinate): CoordFour;
-    antiResolve(x: number, y: number): TriangularGrid.Coordinate;
+    resolveLiniear(coord: Coord): Coord;
+    resolveLinearSquare(coord: Coord): CoordFour;
+    resolveTriangular(x: number, y: number): Coord;
+    resolveTriangularCoord(x: number, y: number): TriangularGrid.Coordinate;
   };
 
   export function create(options: Options): Printer {
@@ -57,7 +59,7 @@ namespace TriangularGridUtils {
     }
 
     return {
-      resolveFour: coord => {
+      resolveLinearSquare: coord => {
         const xrgh = toObj(transform(coord.x * size, coord.y * size));
         const xbtm = toObj(transform((coord.x + 1) * size, coord.y * size));
         const xlft = toObj(transform((coord.x + 1) * size, (coord.y + 1) * size));
@@ -69,10 +71,16 @@ namespace TriangularGridUtils {
           xtop,
         };
       },
-      resolve: (coord: TriangularGrid.Coordinate) => {
+      resolveLiniear: (coord: TriangularGrid.Coordinate) => {
         return toObj(transform(coord.x * size, coord.y * size));
       },
-      antiResolve: (xVal, yVal) => {
+      resolveTriangular: (xVal, yVal) => {
+        const [x, y] = antiTransform(xVal, yVal);
+        const gridXProgress = x / size;
+        const gridYProgress = y / size;
+        return { x: gridXProgress, y: gridYProgress };
+      },
+      resolveTriangularCoord: (xVal, yVal) => {
         const [x, y] = antiTransform(xVal, yVal);
         const gridXProgress = x / size;
         const gridYProgress = y / size;

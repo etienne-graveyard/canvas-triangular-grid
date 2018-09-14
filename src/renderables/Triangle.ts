@@ -9,19 +9,19 @@ export type Props = {
 };
 
 const Triangle: Renderable<Props> = ({ ctx, width, height, state, grid, coord, t, color }) => {
-  const { xbtm, xlft, xrgh, xtop } = grid.resolveFour(coord);
-  if (xtop[1] > (height - 20) / 2) {
-    return;
-  }
-  if (xbtm[1] < -(height - 20) / 2) {
-    return;
-  }
-  if (xlft[0] < -(width - 20) / 2) {
-    return;
-  }
-  if (xrgh[0] > (width - 20) / 2) {
-    return;
-  }
+  const { xbtm, xlft, xrgh, xtop } = grid.resolveLinearSquare(coord);
+  // if (xtop.y > (height - 20) / 2) {
+  //   return;
+  // }
+  // if (xbtm.y < -(height - 20) / 2) {
+  //   return;
+  // }
+  // if (xlft.x < -(width - 20) / 2) {
+  //   return;
+  // }
+  // if (xrgh.x > (width - 20) / 2) {
+  //   return;
+  // }
   const alpha = AnimatedModel.resolve(color.alpha, t);
   if (alpha === 0) {
     return;
