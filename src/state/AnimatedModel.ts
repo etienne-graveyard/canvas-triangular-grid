@@ -25,9 +25,16 @@ namespace AnimatedModel {
   }
 
   const test1: State = [{ delay: 0, value: 100 }];
-  console.log(test1, 0, getInfos(test1, 0));
-  console.log(test1, -100, getInfos(test1, -100));
-  console.log(test1, 100, getInfos(test1, 100));
+  console.log(test1);
+  [-100, 0, 100].map(t => console.log(t, getInfos(test1, t)));
+
+  const test2: State = [{ delay: 0, value: 100 }, { delay: 100, value: 100 }];
+  console.log(test2);
+  [0, 50, 100, 150].map(t => console.log(t, getInfos(test2, t)));
+
+  const test3: State = [{ delay: 0, value: 100 }, { delay: 0, value: 100 }, { delay: 100, value: 100 }];
+  console.log(test3);
+  [-50, 0, 50, 100, 150].map(t => console.log(t, getInfos(test3, t)));
 
   /**
    * Create
@@ -47,7 +54,7 @@ namespace AnimatedModel {
 
   function cleanup(model: State, t: number): void {
     const info = getInfos(model, t);
-    // delete all passed steps
+    // delete all steps before t
     if (info.index > 0) {
       model.splice(0, info.index);
       model[0].delay = info.time;
