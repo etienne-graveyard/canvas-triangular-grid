@@ -1,11 +1,11 @@
 import Root from './renderables/Root';
 import app from './app';
 import TriangularGrid from './state/TriangularGrid';
-import arrow from './data/icons/arrow';
+// import arrow from './data/icons/arrow';
 import search from './data/icons/search';
 import ColorHlsaModel from './state/ColorHslaModel';
 import range from './utils/range';
-import TriangularGridUtils from './utils/TriangularGridUtils';
+// import TriangularGridUtils from './utils/TriangularGridUtils';
 import LineUtils from './utils/LineUtils';
 
 declare const module: {
