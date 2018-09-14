@@ -84,6 +84,10 @@ namespace DldcMap {
     return model.values;
   }
 
+  export function keys<K, V>(model: State<K, V>): Array<K> {
+    return model.keys;
+  }
+
   export function entries<K, V>(model: State<K, V>): Array<[K, V]> {
     return model.keys.map((key, index) => [key, model.values[index]] as any);
   }

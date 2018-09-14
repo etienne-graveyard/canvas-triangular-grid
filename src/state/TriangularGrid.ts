@@ -74,6 +74,10 @@ namespace TriangularGrid {
   export function entries<V>(model: State<V>): Array<[Coordinate, V]> {
     return DldcMap.entries(model).map(entry => [deserializeKey(entry[0]), entry[1]] as any);
   }
+
+  export function keys<V>(model: State<V>): Array<Coordinate> {
+    return DldcMap.keys(model).map(key => deserializeKey(key));
+  }
 }
 
 export default TriangularGrid;
