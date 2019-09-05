@@ -8,7 +8,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "framesync": "4.0.4",
+    "framesync": "^3.1.9",
     "proxy-state-tree": "^4.4.3"
   },
   "devDependencies": {
