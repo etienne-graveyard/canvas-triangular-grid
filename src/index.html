@@ -1,0 +1,110 @@
+<html>
+  <head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        font-family: "Space Grotesk";
+      }
+
+      .app {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: linear-gradient(
+          -180deg,
+          #232950 0%,
+          #3b3b6b 49%,
+          #895a78 100%
+        );
+        display: flex;
+        justify-content: center;
+      }
+
+      .content {
+        max-width: 500px;
+        flex: 1 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat {
+        flex: 1;
+      }
+
+      .search {
+        height: 300px;
+        padding: 10px;
+        display: flex;
+      }
+
+      .search-card {
+        background: #ffffff;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .search-input {
+        height: 60px;
+        position: relative;
+      }
+
+      .search-canvas {
+        position: absolute;
+        height: 60px;
+        left: 0;
+        right: 0;
+        top: 0;
+      }
+
+      .search-input > input {
+        position: absolute;
+        height: 60px;
+        width: 100%;
+        left: 0;
+        right: 0;
+        top: 0;
+        border: none;
+        padding: 10px;
+        font-size: 22px;
+        line-height: 28px;
+        background: transparent;
+        outline: none;
+      }
+
+      .separ {
+        background: #d8d8d8;
+        height: 1px;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app">
+      <div class="content">
+        <div class="chat"></div>
+        <div class="search">
+          <div class="search-card">
+            <div class="search-input">
+              <canvas id="search-canvas" class="search-canvas"></canvas>
+              <input id="search-input" type="text" />
+            </div>
+            <div class="separ"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./index.ts"></script>
+  </body>
+</html>

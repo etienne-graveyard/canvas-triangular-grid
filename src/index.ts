@@ -1,23 +1,16 @@
-import Root from './renderables/Root';
-import app from './app';
-import TriangularGrid from './state/TriangularGrid';
+import Root from "./renderables/Root";
+import app from "./app";
+import TriangularGrid from "./state/TriangularGrid";
 // import arrow from './data/icons/arrow';
-import search from './data/icons/search';
-import ColorHlsaModel from './state/ColorHslaModel';
-import range from './utils/range';
+import search from "./data/icons/search";
+import ColorHlsaModel from "./state/ColorHslaModel";
+import range from "./utils/range";
 // import TriangularGridUtils from './utils/TriangularGridUtils';
-import LineUtils from './utils/LineUtils';
+import LineUtils from "./utils/LineUtils";
 
-declare const module: {
-  hot?: {
-    dispose: (cb: () => any) => any;
-    accept: (cb: () => any) => any;
-  };
-};
+const searchStr = search.map((coord) => TriangularGrid.serializeCoord(coord));
 
-const searchStr = search.map(coord => TriangularGrid.serializeCoord(coord));
-
-const input: HTMLInputElement = document.getElementById('search-input') as any;
+const input: HTMLInputElement = document.getElementById("search-input") as any;
 
 app.render(Root);
 
@@ -35,18 +28,21 @@ app.withEffects(({ transform, width, height, grid }) => {
     btmlft: transform.transform(0, height),
   };
 
-  const cornersTriangular = [corners.toplft, corners.toprgh, corners.btmrgh, corners.btmlft].map(p =>
-    grid.resolveTriangular(p.x, p.y)
-  );
+  const cornersTriangular = [
+    corners.toplft,
+    corners.toprgh,
+    corners.btmrgh,
+    corners.btmlft,
+  ].map((p) => grid.resolveTriangular(p.x, p.y));
 
-  const left = Math.floor(Math.min(...cornersTriangular.map(p => p.x)));
-  const right = Math.floor(Math.max(...cornersTriangular.map(p => p.x))) + 1;
-  const bottom = Math.floor(Math.min(...cornersTriangular.map(p => p.y)));
-  const top = Math.floor(Math.max(...cornersTriangular.map(p => p.y))) + 1;
+  const left = Math.floor(Math.min(...cornersTriangular.map((p) => p.x)));
+  const right = Math.floor(Math.max(...cornersTriangular.map((p) => p.x))) + 1;
+  const bottom = Math.floor(Math.min(...cornersTriangular.map((p) => p.y)));
+  const top = Math.floor(Math.max(...cornersTriangular.map((p) => p.y))) + 1;
 
-  range(left, right).map(x => {
-    range(bottom, top).map(y => {
-      (['l', 'r'] as Array<'l' | 'r'>).map(side => {
+  range(left, right).map((x) => {
+    range(bottom, top).map((y) => {
+      (["l", "r"] as Array<"l" | "r">).map((side) => {
         const coord: TriangularGrid.Coordinate = { x, y, side };
         const { xbtm, xlft, xrgh, xtop } = grid.resolveRectangularSquare(coord);
         const margin = 3;
@@ -72,12 +68,18 @@ const mainColor = ColorHlsaModel.createResolved(232, 38, 24);
 
 // show search icon
 app.mutate((state, { t }) => {
-  search.map(coord => {
+  search.map((coord) => {
     TriangularGrid.update(
       state.grid,
       coord,
-      color => {
-        ColorHlsaModel.mutate.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 10), 0, 3000);
+      (color) => {
+        ColorHlsaModel.mutate.transitionTo(
+          color,
+          t,
+          ColorHlsaModel.createResolved(0, 0, 10),
+          0,
+          3000
+        );
         // ColorHlsaModel.mutate.transitionTo(color, t, ColorHlsaModel.createResolved(0, 0, 90), 1000, 1000);
         return color;
       },
@@ -86,7 +88,7 @@ app.mutate((state, { t }) => {
   });
 });
 
-input.addEventListener('focus', () => {
+input.addEventListener("focus", () => {
   app.mutate((state, { grid, width, height, t, transform }) => {
     all.map((coord, index) => {
       const coordRect = grid.resolveRectangular(coord);
@@ -107,7 +109,8 @@ input.addEventListener('focus', () => {
 
       const delay = dist * 5 + linearX * 0.3 + Math.sin(linearX * 5) * 10;
       const maxAlpha = 0.7 + Math.random() * 0.2;
-      const isSearch = searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
+      const isSearch =
+        searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
       const colors = isSearch
         ? {
             from: ColorHlsaModel.createResolved(0, 0, 10),
@@ -120,9 +123,15 @@ input.addEventListener('focus', () => {
       TriangularGrid.update(
         state.grid,
         coord,
-        color => {
+        (color) => {
           ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 50);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 50);
+          ColorHlsaModel.mutate.transitionTo(
+            color,
+            t,
+            colors.to,
+            delay + 100,
+            50
+          );
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
@@ -131,8 +140,8 @@ input.addEventListener('focus', () => {
   });
 });
 
-input.addEventListener('blur', () => {
-  console.log('blur');
+input.addEventListener("blur", () => {
+  console.log("blur");
 
   app.mutate((state, { grid, width, height, t, transform }) => {
     all.map((coord, index) => {
@@ -165,9 +174,15 @@ input.addEventListener('blur', () => {
       TriangularGrid.update(
         state.grid,
         coord,
-        color => {
+        (color) => {
           ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 0);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 100, 0);
+          ColorHlsaModel.mutate.transitionTo(
+            color,
+            t,
+            colors.to,
+            delay + 100,
+            0
+          );
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
@@ -176,8 +191,8 @@ input.addEventListener('blur', () => {
   });
 });
 
-input.addEventListener('input', () => {
-  console.log('input');
+input.addEventListener("input", () => {
+  console.log("input");
 
   app.mutate((state, { width, height, t, grid, transform }) => {
     // iconHue = Math.random() * 360;
@@ -188,7 +203,8 @@ input.addEventListener('input', () => {
       const dist = Math.sqrt(x * x + coordLinear.y * coordLinear.y);
       const delay = dist + Math.abs(coordLinear.y);
       const maxAlpha = 0.3 + Math.random() * 0.1;
-      const isSearch = searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
+      const isSearch =
+        searchStr.indexOf(TriangularGrid.serializeCoord(coord)) >= 0;
       const colors = isSearch
         ? {
             from: ColorHlsaModel.createResolved(0, 0, 10),
@@ -201,9 +217,15 @@ input.addEventListener('input', () => {
       TriangularGrid.update(
         state.grid,
         coord,
-        color => {
+        (color) => {
           ColorHlsaModel.mutate.transitionTo(color, t, colors.from, delay, 20);
-          ColorHlsaModel.mutate.transitionTo(color, t, colors.to, delay + 50, 20);
+          ColorHlsaModel.mutate.transitionTo(
+            color,
+            t,
+            colors.to,
+            delay + 50,
+            20
+          );
           return color;
         },
         ColorHlsaModel.createStatic(t, ColorHlsaModel.setAlpha(mainColor, 0))
@@ -242,9 +264,9 @@ input.addEventListener('input', () => {
   });
 });
 
-if (module.hot) {
-  module.hot.dispose(function() {
-    console.log('destroy');
-    app.destroy();
-  });
-}
+// if (module.hot) {
+//   module.hot.dispose(function() {
+//     console.log('destroy');
+//     app.destroy();
+//   });
+// }
